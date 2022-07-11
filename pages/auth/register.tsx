@@ -1,9 +1,14 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  UserCredential,
+} from "firebase/auth";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { GiSpinningBlades } from "react-icons/gi";
 import Layout from "../../components/layout/auth";
-import { auth } from "../../firebaseconfig";
+import { auth, db } from "../../firebaseconfig";
+import { setDoc, doc, Timestamp } from "firebase/firestore";
 
 type Props = {};
 
@@ -25,10 +30,21 @@ export default function Login({}: Props) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, form.email, form.password);
-      const User = auth?.currentUser;
-      if (User) await updateProfile(User, { displayName: form.username });
+      const result: UserCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
 
+      await setDoc(doc(db, "users", result.user.uid), {
+        uid: result.user.uid,
+        username: form.username,
+        email: form.email,
+        createdAt: Timestamp.fromDate(new Date()),
+        isOnline: true,
+      });
+
+      setIsLoading(false);
       router.push("/");
     } catch (error) {
       setIsLoading(false);
