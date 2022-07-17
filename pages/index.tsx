@@ -11,19 +11,30 @@ import { useRouter } from "next/router";
 import {
   addDoc,
   collection,
+  doc,
   DocumentData,
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   Timestamp,
 } from "firebase/firestore";
-import { SyntheticEvent, useEffect, useRef, useState } from "react";
+import {
+  KeyboardEvent,
+  MouseEvent,
+  MutableRefObject,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Moment from "react-moment";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const scrollRef = useRef<null | HTMLDivElement>(null);
+  const fileInputRef = useRef<null | HTMLInputElement>(null);
   const [activeUser, setActiveUser] = useState<DocumentData | null>(null);
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<DocumentData[]>([]);
@@ -70,8 +81,10 @@ const Home: NextPage = () => {
   };
   console.log(conversation);
 
-  const handleSubmit = async (e: SyntheticEvent) => {
+  const handleSubmit = async (e: KeyboardEvent | MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
     if (auth.currentUser?.uid && (message || imgInput)) {
       console.log("send message start....");
 
@@ -95,7 +108,20 @@ const Home: NextPage = () => {
         createdAt: Timestamp.fromDate(new Date()),
         media: url || null,
       });
+
+      await setDoc(doc(db, "lastMsg", id), {
+        message: message || null,
+        from: user1,
+        to: user2,
+        createdAt: Timestamp.fromDate(new Date()),
+        media: url || null,
+        unread: true,
+      });
+
       setMessage("");
+      setImgInput(null);
+      let fileRef: HTMLInputElement | null = fileInputRef.current;
+      if (fileRef) fileRef.value = "";
       console.log("send message finish!");
     }
   };
@@ -147,11 +173,12 @@ const Home: NextPage = () => {
                       ref={scrollRef}
                     >
                       <div
-                        className={`w-fit h-fit py-2 px-5 flex flex-col mt-3 ${
+                        className={`w-fit h-fit py-2 px-5 flex flex-col mt-3 break-words  ${
                           msg.from === user?.uid
                             ? "bg-pink-400 mr-3 rounded-l-lg rounded-t-lg text-white"
                             : "bg-white rounded-r-lg rounded-t-lg ml-3"
                         } `}
+                        style={{ maxWidth: "50%" }}
                       >
                         {msg.media ? (
                           <div className="my-2">
@@ -168,13 +195,17 @@ const Home: NextPage = () => {
                         {msg.message}
                       </div>
                       <small className="text-white mx-3">
-                        <Moment fromNow>{msg.createdAt.toDate()}</Moment>
+                        <Moment trim fromNow>
+                          {msg.createdAt.toDate()}
+                        </Moment>
                       </small>
                     </div>
                   );
                 })
               ) : (
-                <div></div>
+                <div className="text-pink-400 text-2xl text-center pt-10 w-full">
+                  Say Hi!
+                </div>
               )}
             </div>
 
@@ -187,6 +218,7 @@ const Home: NextPage = () => {
               </label>
               <input
                 type="file"
+                ref={fileInputRef}
                 id="imageMessage"
                 className="hidden"
                 accept="image/*"
@@ -198,13 +230,14 @@ const Home: NextPage = () => {
                 value={message}
                 placeholder={`Message ${activeUser.username}`}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => (e.key === "Enter" ? handleSubmit(e) : null)}
               />
 
               <GiCommercialAirplane
                 color="white"
                 size={35}
                 className="my-3 mx-8 cursor-pointer"
-                onClick={handleSubmit}
+                onClick={(e) => handleSubmit(e)}
               />
             </div>
           </>
