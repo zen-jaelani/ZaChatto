@@ -11,6 +11,8 @@ import {
   collection,
   doc,
   DocumentData,
+  DocumentSnapshot,
+  onSnapshot,
   updateDoc,
 } from "firebase/firestore";
 import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
@@ -20,13 +22,12 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-
-type Props = {};
+import Contact from "./contact";
 
 export default function SideBar({
-  getUser,
+  setChat,
 }: {
-  getUser: Dispatch<SetStateAction<DocumentData>>;
+  setChat: Dispatch<SetStateAction<DocumentData>>;
 }) {
   const router = useRouter();
   const [img, setImg] = useState<File | null | undefined>(null);
@@ -103,30 +104,13 @@ export default function SideBar({
           </button>
         </div>
 
-        {contacts?.map((v) => (
-          <div
-            className="flex cursor-pointer pl-5 py-3 -ml-5 hover:bg-pink-500"
-            key={v.uid}
-            onClick={() => getUser(v)}
-          >
-            <Image
-              src={require("/public/vercel.svg")}
-              alt="profile"
-              height={"70"}
-              width={"70"}
-              objectFit="contain"
-              className={"bg-white rounded-full flex-none"}
-            />
-
-            <div className="flex-initial w-2/3 mx-2 flex flex-col justify-center">
-              <h1>{v.username}</h1>
-              <p className="truncate">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              </p>
+        {contacts?.map((v) => {
+          return (
+            <div key={v.uid} onClick={() => setChat(v)}>
+              <Contact data={v} />
             </div>
-            <p className="text-sm mt-2">Dec 10</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div
@@ -193,7 +177,7 @@ function Modal({
   closeModal,
   users,
 }: {
-  closeModal: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal: Dispatch<SetStateAction<boolean>>;
   users: DocumentData[] | undefined;
 }) {
   async function addContact(data: string) {
