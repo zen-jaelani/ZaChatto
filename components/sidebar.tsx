@@ -83,7 +83,7 @@ export default function SideBar({
       <div className="mt-5">
         <div className="pr-5">
           <h1 className="font-bold text-2xl">Messages</h1>
-          <label className="relative block mt-10">
+          {/* <label className="relative block mt-10">
             <span className="sr-only">Search</span>
             <span className="absolute inset-y-0 left-0 flex items-center pl-2">
               <MdSearch color="white" size={25} />
@@ -94,7 +94,7 @@ export default function SideBar({
               type="text"
               name="search"
             />
-          </label>
+          </label> */}
 
           <button
             className="bg-slate-800 text-pink-400 w-full p-3 my-5 rounded-md"
@@ -104,13 +104,19 @@ export default function SideBar({
           </button>
         </div>
 
-        {contacts?.map((v) => {
-          return (
-            <div key={v.uid} onClick={() => setChat(v)}>
-              <Contact data={v} />
-            </div>
-          );
-        })}
+        {contacts?.length ? (
+          contacts?.map((v) => {
+            return (
+              <div key={v.uid} onClick={() => setChat(v)}>
+                <Contact data={v} />
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-white text-2xl text-center py-10 w-full">
+            No Contact
+          </div>
+        )}
       </div>
 
       <div
@@ -204,9 +210,7 @@ function Modal({
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="relative w-full my-6 mx-auto max-w-2xl">
-          {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-slate-800 outline-none focus:outline-none">
-            {/*header*/}
             <div className="flex items-start justify-between p-5 border-b border-solid border-pink-400 rounded-t">
               <h3 className="text-3xl font-semibold">Add to contact</h3>
               <button
@@ -218,42 +222,47 @@ function Modal({
                 </span>
               </button>
             </div>
-            {/*body*/}
             <div className="relative p-6 flex-auto overflow-y-auto">
-              {users?.map((v) => (
-                <div className="flex max-w-full my-3" key={v.uid}>
-                  <div className={`w-16 h-16 relative`}>
-                    {v?.image ? (
-                      <Image
-                        src={v.image}
-                        alt="profile"
-                        layout="fill"
-                        objectFit="cover"
-                        className={"rounded-full"}
-                      />
-                    ) : (
-                      <div className="bg-pink-400 w-full h-full text-3xl rounded-full flex flex-col justify-center items-center">
-                        {v?.username?.split?.(" ")[0].slice(0, 1)}
+              {users?.length ? (
+                users.map((v) => (
+                  <div className="flex max-w-full my-3" key={v.uid}>
+                    <div className={`w-16 h-16 relative`}>
+                      {v?.image ? (
+                        <Image
+                          src={v.image}
+                          alt="profile"
+                          layout="fill"
+                          objectFit="cover"
+                          className={"rounded-full"}
+                        />
+                      ) : (
+                        <div className="bg-pink-400 w-full h-full text-3xl rounded-full flex flex-col justify-center items-center">
+                          {v?.username?.split?.(" ")[0].slice(0, 1)}
+                        </div>
+                      )}
+                      <div className="opacity-0 bg-slate-800 rounded-full hover:opacity-100 duration-300 absolute inset-0 z-10 flex justify-center items-center text-white font-semibold">
+                        <GiPhotoCamera size={35} />
                       </div>
-                    )}
-                    <div className="opacity-0 bg-slate-800 rounded-full hover:opacity-100 duration-300 absolute inset-0 z-10 flex justify-center items-center text-white font-semibold">
-                      <GiPhotoCamera size={35} />
                     </div>
-                  </div>
 
-                  <div className="flex mx-2 flex-auto flex-col justify-center">
-                    <h1>{v.username}</h1>
-                    <p className="truncate">{v.email}</p>
-                  </div>
+                    <div className="flex mx-2 flex-auto flex-col justify-center">
+                      <h1>{v.username}</h1>
+                      <p className="truncate">{v.email}</p>
+                    </div>
 
-                  <button
-                    className="bg-pink-400 w-20 h-10 mt-5 rounded-md"
-                    onClick={() => addContact(v.uid)}
-                  >
-                    Add
-                  </button>
+                    <button
+                      className="bg-pink-400 w-20 h-10 mt-5 rounded-md"
+                      onClick={() => addContact(v.uid)}
+                    >
+                      Add
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="text-pink-400 text-2xl text-center py-10 w-full">
+                  No Contact Available
                 </div>
-              ))}
+              )}
             </div>
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-pink-400 rounded-b">
