@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { IoImageOutline } from "react-icons/io5";
+import { IoCloseCircleOutline, IoImageOutline } from "react-icons/io5";
 import { GiBigGear, GiCommercialAirplane } from "react-icons/gi";
 import { SiApacheairflow } from "react-icons/si";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
   const [activeUser, setActiveUser] = useState<DocumentData | null>(null);
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<DocumentData[]>([]);
-  const [imgInput, setImgInput] = useState<File | null | undefined>(null);
+  const [imgInput, setImgInput] = useState<any>(null);
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
@@ -89,12 +89,12 @@ const Home: NextPage = () => {
       console.log("send message start....");
 
       let url: string | undefined;
-      if (imgInput) {
+      if (imgInput.file) {
         const imgRef = ref(
           storage,
-          `images/${new Date().getTime()} - ${imgInput.name}`
+          `images/${new Date().getTime()} - ${imgInput.file.name}`
         );
-        const snap = await uploadBytes(imgRef, imgInput);
+        const snap = await uploadBytes(imgRef, imgInput.file);
         const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
         url = dlUrl;
       }
@@ -125,6 +125,8 @@ const Home: NextPage = () => {
       console.log("send message finish!");
     }
   };
+
+  console.log(imgInput);
 
   return (
     <div className="flex">
@@ -184,9 +186,9 @@ const Home: NextPage = () => {
                           <div className="my-2">
                             <Image
                               src={msg.media}
-                              width={100}
-                              height={100}
-                              objectFit="cover"
+                              width={240}
+                              height={320}
+                              objectFit="contain"
                               alt=""
                               className="rounded-lg "
                             />
@@ -213,6 +215,22 @@ const Home: NextPage = () => {
               className="border-t border-pink-400 flex bg-zinc-900 max-w-full px-15 fixed bottom-0 py-4 px-7"
               style={{ width: "inherit" }}
             >
+              {imgInput?.view && (
+                <div className="absolute bg-slate-800 bottom-24 rounded-lg p-5">
+                  <IoCloseCircleOutline
+                    className="absolute bg-slate-800 rounded-full cursor-pointer -right-3 -top-3 text-pink-700 z-50"
+                    size={30}
+                    onClick={() => setImgInput(null)}
+                  />
+                  <Image
+                    src={imgInput.view}
+                    width={240}
+                    height={320}
+                    objectFit="contain"
+                    alt="upload"
+                  />
+                </div>
+              )}
               <label htmlFor="imageMessage">
                 <IoImageOutline color="white" size={40} className="mr-5 mt-3" />
               </label>
@@ -222,7 +240,14 @@ const Home: NextPage = () => {
                 id="imageMessage"
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => setImgInput(e.target.files?.[0])}
+                onChange={(e) => {
+                  if (e.target.files) {
+                    setImgInput({
+                      file: e.target.files[0],
+                      view: URL.createObjectURL(e.target.files[0]),
+                    });
+                  }
+                }}
               />
               <input
                 type="text"
