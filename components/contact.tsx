@@ -36,7 +36,9 @@ export default function Contact({ data }: Props) {
         <div className="flex justify-between">
           <h1>{data.username}</h1>
           <p className="text-sm w-fit">
-            <Moment fromNow>{last?.createdAt.toDate()}</Moment>
+            {last?.createdAt && (
+              <Moment fromNow>{last?.createdAt.toDate()}</Moment>
+            )}
           </p>
         </div>
         <p className="truncate">
