@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
@@ -9,6 +10,11 @@ type Props = {
 export default function Auth({ children, title }: Props) {
   return (
     <div className="flex bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 h-screen">
+      <Head>
+        <title>ZaChatto</title>
+        <link rel="icon" href="/ZaLogo.svg" />
+      </Head>
+
       <div className="bg-slate-800 h-full md:h-fit w-full md:w-1/2 m-auto text-white py-5 rounded-md">
         <h1 className="text-center text-3xl font-bold mb-5">{title}</h1>
         <hr className="border-pink-400 border-b-2" />

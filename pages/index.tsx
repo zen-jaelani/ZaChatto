@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { IoCloseCircleOutline, IoImageOutline } from "react-icons/io5";
-import { GiBigGear, GiCommercialAirplane } from "react-icons/gi";
+import { GiCommercialAirplane } from "react-icons/gi";
 import { SiApacheairflow } from "react-icons/si";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db, storage } from "../firebaseconfig";
@@ -19,15 +19,7 @@ import {
   setDoc,
   Timestamp,
 } from "firebase/firestore";
-import {
-  KeyboardEvent,
-  MouseEvent,
-  MutableRefObject,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Moment from "react-moment";
 
@@ -82,7 +74,7 @@ const Home: NextPage = () => {
     }
   };
 
-  https: const handleSubmit = async (e: KeyboardEvent | MouseEvent) => {
+  const handleSubmit = async (e: KeyboardEvent | MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -127,10 +119,12 @@ const Home: NextPage = () => {
     }
   };
 
-  console.log(imgInput);
-
   return (
     <div className="flex">
+      <Head>
+        <title>ZaChatto</title>
+        <link rel="icon" href="/ZaLogo.svg" />
+      </Head>
       <SideBar setChat={setChat} />
 
       <main className="bg-zinc-900 max-h-screen hidden overflow-hidden  md:flex md:w-2/3 lg:w-4/5 relative">
