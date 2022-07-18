@@ -38,7 +38,9 @@ const Home: NextPage = () => {
   const [activeUser, setActiveUser] = useState<DocumentData | null>(null);
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<DocumentData[]>([]);
-  const [imgInput, setImgInput] = useState<any>(null);
+  const [imgInput, setImgInput] = useState<{ file: File; view: string } | null>(
+    null
+  );
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
@@ -79,9 +81,8 @@ const Home: NextPage = () => {
       console.log(error);
     }
   };
-  console.log(conversation);
 
-  const handleSubmit = async (e: KeyboardEvent | MouseEvent) => {
+  https: const handleSubmit = async (e: KeyboardEvent | MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -89,7 +90,7 @@ const Home: NextPage = () => {
       console.log("send message start....");
 
       let url: string | undefined;
-      if (imgInput.file) {
+      if (imgInput?.file) {
         const imgRef = ref(
           storage,
           `images/${new Date().getTime()} - ${imgInput.file.name}`
