@@ -1,6 +1,6 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { GiSpinningBlades } from "react-icons/gi";
 import Layout from "../../components/layout/auth";
 import { auth } from "../../firebaseconfig";
@@ -17,9 +17,6 @@ export default function Login({}: Props) {
   const [form, setForm] = useState<form>({} as form);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -28,9 +25,16 @@ export default function Login({}: Props) {
     e.preventDefault();
     setIsLoading(true);
 
-    await signInWithEmailAndPassword(form.email, form.password);
+    signInWithEmailAndPassword(auth, form.email, form.password)
+      .then(() => {
+        router.push("/");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        alert(errorCode);
+      });
+
     setIsLoading(false);
-    router.push("/");
   }
   return (
     <Layout title="Login">
