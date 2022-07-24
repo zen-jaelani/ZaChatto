@@ -1,21 +1,9 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { MdSearch } from "react-icons/md";
 import { auth, db, storage } from "../firebaseconfig";
 import { GiExitDoor, GiPhotoCamera } from "react-icons/gi";
 import Image from "next/image";
 import { signOut } from "firebase/auth";
-import { useRouter } from "next/router";
-import * as firebase from "firebase/app";
-import {
-  arrayUnion,
-  collection,
-  doc,
-  DocumentData,
-  DocumentSnapshot,
-  onSnapshot,
-  updateDoc,
-} from "firebase/firestore";
-import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
+import { arrayUnion, doc, DocumentData, updateDoc } from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -26,19 +14,17 @@ import Contact from "./contact";
 
 export default function SideBar({
   setChat,
+  data,
+  allUsers,
+  contacts,
 }: {
   setChat: Dispatch<SetStateAction<DocumentData>>;
+  data: DocumentData;
+  allUsers: DocumentData[];
+  contacts: DocumentData[];
 }) {
-  const router = useRouter();
   const [img, setImg] = useState<File | null | undefined>(null);
   const [showModal, setShowModal] = useState(false);
-  const [snapshot, loading] = useCollection(collection(db, "users"));
-  const allUsers = snapshot?.docs
-    .map((doc) => doc.data())
-    .filter((data) => data.uid !== auth.currentUser?.uid);
-
-  const [data] = useDocumentData(doc(db, "users", auth.currentUser?.uid || ""));
-  const contacts = allUsers?.filter((v) => data?.contacts.includes(v.uid));
 
   useEffect(() => {
     async function changeImage() {
@@ -161,9 +147,7 @@ export default function SideBar({
           <GiExitDoor
             size={35}
             className="-mr-0 cursor-pointer"
-            onClick={() =>
-              signOut(auth).then(() => router.replace("/auth/login"))
-            }
+            onClick={() => signOut(auth)}
           />
         </div>
       </div>
@@ -264,7 +248,6 @@ function Modal({
                 </div>
               )}
             </div>
-            {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-pink-400 rounded-b">
               <button
                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"

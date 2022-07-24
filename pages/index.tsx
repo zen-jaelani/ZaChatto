@@ -22,6 +22,7 @@ import {
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Moment from "react-moment";
+import { useCollection, useDocumentData } from "react-firebase-hooks/firestore";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -33,23 +34,20 @@ const Home: NextPage = () => {
   const [imgInput, setImgInput] = useState<{ file: File; view: string } | null>(
     null
   );
-  const [user, loading, error] = useAuthState(auth);
+
+  const [user, userLoading, error] = useAuthState(auth);
+
+  const [snapshot, usersLoading] = useCollection(collection(db, "users"));
+
+  const allUsers = snapshot?.docs
+    .map((doc) => doc.data())
+    .filter((data) => data.uid !== auth.currentUser?.uid);
+  const [usersData] = useDocumentData(doc(db, "users", user?.uid || ""));
+  const contacts = allUsers?.filter((v) => usersData?.contacts.includes(v.uid));
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
-
-  if (loading) {
-    return (
-      <div className="w-full h-screen bg-slate-800 flex items-center">
-        <SiApacheairflow className="text-9xl text-pink-400 mx-auto animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push("auth/login");
-  }
 
   const setChat = (data: DocumentData) => {
     try {
@@ -119,13 +117,28 @@ const Home: NextPage = () => {
     }
   };
 
+  if (usersLoading) {
+    return (
+      <div className="w-full h-screen bg-slate-800 flex items-center">
+        <SiApacheairflow className="text-9xl text-pink-400 mx-auto animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex">
       <Head>
         <title>ZaChatto</title>
         <link rel="icon" href="/ZaLogo.svg" />
       </Head>
-      <SideBar setChat={setChat} />
+      {usersData && allUsers && contacts && (
+        <SideBar
+          setChat={setChat}
+          data={usersData}
+          allUsers={allUsers}
+          contacts={contacts}
+        />
+      )}
 
       <main className="bg-zinc-900 max-h-screen hidden overflow-hidden  md:flex md:w-2/3 lg:w-4/5 relative">
         {activeUser ? (
