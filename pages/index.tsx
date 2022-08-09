@@ -43,7 +43,7 @@ const Home: NextPage = () => {
     .map((doc) => doc.data())
     .filter((data) => data.uid !== auth.currentUser?.uid);
   const [usersData] = useDocumentData(doc(db, "users", user?.uid || ""));
-  const contacts = allUsers?.filter((v) => usersData?.contacts.includes(v.uid));
+  const contacts = allUsers?.filter((v) => usersData?.contacts?.includes(v.uid));
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
