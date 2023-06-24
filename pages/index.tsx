@@ -34,6 +34,7 @@ const Home: NextPage = () => {
   const [imgInput, setImgInput] = useState<{ file: File; view: string } | null>(
     null
   );
+  const [sendingMessage, setSetsendingMessage] = useState(false);
 
   const [user, userLoading, error] = useAuthState(auth);
 
@@ -43,7 +44,9 @@ const Home: NextPage = () => {
     .map((doc) => doc.data())
     .filter((data) => data.uid !== auth.currentUser?.uid);
   const [usersData] = useDocumentData(doc(db, "users", user?.uid || ""));
-  const contacts = allUsers?.filter((v) => usersData?.contacts?.includes(v.uid));
+  const contacts = allUsers?.filter((v) =>
+    usersData?.contacts?.includes(v.uid)
+  );
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -76,8 +79,10 @@ const Home: NextPage = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (auth.currentUser?.uid && (message || imgInput)) {
+    if (auth.currentUser?.uid && (message || imgInput) && !sendingMessage) {
       console.log("send message start....");
+
+      setSetsendingMessage(true);
 
       let url: string | undefined;
       if (imgInput?.file) {
@@ -89,6 +94,7 @@ const Home: NextPage = () => {
         const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
         url = dlUrl;
       }
+      setImgInput(null);
       const user1 = auth.currentUser?.uid;
       const user2 = activeUser?.uid;
       const id = user1 > user2 ? `${user1}<>${user2}` : `${user2}<>${user1}`;
@@ -110,7 +116,7 @@ const Home: NextPage = () => {
       });
 
       setMessage("");
-      setImgInput(null);
+      setSetsendingMessage(false);
       let fileRef: HTMLInputElement | null = fileInputRef.current;
       if (fileRef) fileRef.value = "";
       console.log("send message finish!");
