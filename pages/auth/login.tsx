@@ -45,6 +45,7 @@ export default function Login({}: Props) {
           placeholder="Email"
           name="email"
           onChange={(e) => handleChange(e)}
+          autoComplete="off"
           autoFocus
           required
         />
@@ -54,6 +55,7 @@ export default function Login({}: Props) {
           placeholder="Password"
           name="password"
           onChange={(e) => handleChange(e)}
+          autoComplete="off"
           autoFocus
           required
         />

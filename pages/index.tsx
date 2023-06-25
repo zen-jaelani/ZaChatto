@@ -268,6 +268,7 @@ const Home: NextPage = () => {
                 className="rounded-lg p-3 w-full"
                 value={message}
                 placeholder={`Message ${activeUser.username}`}
+                autoComplete="off"
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => (e.key === "Enter" ? handleSubmit(e) : null)}
               />

@@ -60,6 +60,7 @@ export default function Login({}: Props) {
           placeholder="Username"
           name="username"
           onChange={(e) => handleChange(e)}
+          autoComplete="off"
           autoFocus
           required
         />
@@ -68,6 +69,7 @@ export default function Login({}: Props) {
           type="email"
           className="bg-slate-900 border-b-2 border-pink-400 w-full text-white mb-10 p-3"
           placeholder="Email"
+          autoComplete="off"
           name="email"
           onChange={(e) => handleChange(e)}
           required
@@ -78,6 +80,7 @@ export default function Login({}: Props) {
           placeholder="Password"
           name="password"
           onChange={(e) => handleChange(e)}
+          autoComplete="off"
           required
         />
         <button className="w-full bg-pink-400 p-4 rounded-xl">
