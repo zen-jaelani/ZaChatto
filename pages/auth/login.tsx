@@ -41,7 +41,7 @@ export default function Login({}: Props) {
       <form className="px-5 my-10" onSubmit={(e) => handleLogin(e)}>
         <input
           type="email"
-          className="bg-slate-800 border-b-2 border-pink-400 w-full text-white mb-10 p-3"
+          className="bg-slate-900 border-b-2 border-pink-400 w-full text-white mb-10 p-3"
           placeholder="Email"
           name="email"
           onChange={(e) => handleChange(e)}
@@ -50,7 +50,7 @@ export default function Login({}: Props) {
         />
         <input
           type="password"
-          className="bg-slate-800 border-b-2 border-pink-400 w-full text-white mb-10 p-3"
+          className="bg-slate-900 border-b-2 border-pink-400 w-full text-white mb-10 p-3"
           placeholder="Password"
           name="password"
           onChange={(e) => handleChange(e)}
